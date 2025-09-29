@@ -132,13 +132,23 @@ const AI_SETTINGS = {
     }
 };
 
+// Web Audio API context for sound effects
+let audioContext;
+try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch (e) {
+    console.warn('Web Audio API is not supported in this browser.');
+    audioContext = null;
+}
+
 // ============================================================================
 // INITIALIZATION AND SETUP
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Davi\'s Chess Game initialized');
-    initializeGame();
+    // Do not initialize the game here. Start with the main menu.
+    showMainMenu();
     setupEventListeners();
     startGameTimer();
 });
@@ -355,6 +365,7 @@ function showSettings() {
 
 function saveSettings() {
     console.log('Settings saved (placeholder)');
+    // Here you would read values from the settings modal and apply them
     closeSettings();
 }
 // ============================================================================
@@ -588,6 +599,7 @@ function handleSpecialMoves(move) {
 }
 
 function finalizeMove(move) {
+    playSound(move.capturedPiece ? 'capture' : 'move');
     move.notation = generateMoveNotation(move);
     gameState.moveHistory.push(move);
     gameState.moveCount++;
@@ -1528,6 +1540,33 @@ function startGameTimer() {
 function setupDragAndDrop() {
     // Drag and drop functionality would be implemented here
     // For now, we rely on click-based movement
+}
+
+/**
+ * Plays a sound effect using the Web Audio API.
+ * @param {string} type - The type of sound to play ('move', 'capture', 'check').
+ */
+function playSound(type) {
+    if (!audioContext) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    if (type === 'move') {
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    } else if (type === 'capture') {
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+    }
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
 }
 
 console.log("Davi's Chess Game JavaScript loaded successfully");

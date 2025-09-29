@@ -753,7 +753,7 @@ select.form-control {
 }
 
 .screen.hidden {
-    display: none;
+    display: none !important;
 }
 
 /* Game screen specific layout */
