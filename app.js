@@ -154,7 +154,7 @@ function setupEventListeners() {
     // Pawn promotion
     document.querySelectorAll('.promotion-piece').forEach(btn => {
         btn.addEventListener('click', function() {
-            handlePawnPromotion(this.getAttribute('onclick').match(/'(.*?)'/)[1]);
+            // This is handled by the onclick attribute, but we keep the listener for robustness
         });
     });
 
@@ -281,10 +281,16 @@ function selectDifficulty(difficulty) {
     setTimeout(() => {
         gameState.gameMode = 'ai';
         gameState.aiDifficulty = difficulty;
-        const difficultyNames = { easy: 'Fácil', medium: 'Médio', hard: 'Difícil' };
-        document.getElementById('game-mode-display').textContent = `vs IA (${difficultyNames[difficulty]})`;
+        const difficultyNames = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+        document.getElementById('game-mode-display').textContent = `vs AI (${difficultyNames[difficulty]})`;
         showGameScreen();
     }, 300);
+}
+
+function showJoinRoom() {
+    console.log('Showing join room screen');
+    hideAllScreens();
+    document.getElementById('join-room').classList.remove('hidden');
 }
 
 function createRoom() {
@@ -298,9 +304,9 @@ function createRoom() {
     setTimeout(() => {
         gameState.gameMode = 'online';
         gameState.isConnected = true;
-        document.getElementById('game-mode-display').textContent = `Online - Sala: ${roomCode}`;
+        document.getElementById('game-mode-display').textContent = `Online - Room: ${roomCode}`;
         showGameScreen();
-        showGameStatus('Oponente conectado! Jogo iniciado.', 'info');
+        showGameStatus('Opponent connected! Game started.', 'info');
     }, 3000);
 }
 
@@ -317,9 +323,9 @@ function joinRoom() {
     gameState.isConnected = true;
     gameState.currentPlayer = 'black';
     
-    document.getElementById('game-mode-display').textContent = `Online - Sala: ${roomCode}`;
+    document.getElementById('game-mode-display').textContent = `Online - Room: ${roomCode}`;
     showGameScreen();
-    showGameStatus('Conectado ao jogo!', 'success');
+    showGameStatus('Connected to game!', 'success');
 }
 
 function cancelRoom() {
@@ -505,7 +511,7 @@ function makeMove(fromRow, fromCol, toRow, toCol) {
     }
     
     if (capturedPiece) {
-        gameState.capturedPieces[capturedPiece.color].push(capturedPiece);
+        gameState.capturedPieces[capturedPiece.color === 'white' ? 'black' : 'white'].push(capturedPiece);
     }
     
     updateCastlingRights(move);
@@ -598,7 +604,7 @@ function handlePawnPromotionStart(row, col, move) {
     // Show promotion modal - force it to be visible
     const modal = document.getElementById('promotion-modal');
     if (modal) {
-        console.log(`Mostrando modal de promoção`);
+        console.log(`Showing promotion modal`);
         modal.classList.remove('hidden'); // This should be enough
     } else {
         console.error('Promotion modal not found!');
@@ -623,7 +629,6 @@ function selectPromotion(pieceType) {
     const modal = document.getElementById('promotion-modal');
     if (modal) {
         modal.classList.add('hidden');
-        modal.style.display = 'none';
     }
     
     // Update the move with promotion info
@@ -1006,7 +1011,7 @@ function isRepetitiveMove(move) {
            previousMoves[previousMoves.length - 2] === moveString;
 }
 
-function minimax(gameState, depth, isMaximizing, alpha, beta, settings) {
+function minimax(depth, isMaximizing, alpha, beta, settings) {
     if (depth === 0) {
         return evaluatePosition(settings);
     }
@@ -1213,7 +1218,7 @@ function checkGameEnd() {
             showGameStatus('Draw - Stalemate!', 'info');
         }
     } else if (isInCheck(currentColor)) {
-        showGameStatus('Xeque!', 'warning');
+        showGameStatus('Check!', 'warning');
     }
 }
 
@@ -1268,7 +1273,7 @@ function undoLastMove() {
     }
     
     if (lastMove.capturedPiece && lastMove.special !== 'enPassant') {
-        const capturedList = gameState.capturedPieces[lastMove.capturedPiece.color];
+        const capturedList = gameState.capturedPieces[lastMove.capturedPiece.color === 'white' ? 'black' : 'white'];
         const index = capturedList.findIndex(p => p.type === lastMove.capturedPiece.type);
         if (index !== -1) {
             capturedList.splice(index, 1);
@@ -1305,7 +1310,7 @@ function closeSettings() {
 }
 
 function resetGame() {
-    console.log('Reiniciando jogo');
+    console.log('Resetting game');
     
     document.querySelectorAll('.modal').forEach(modal => {
         modal.classList.add('hidden');
@@ -1364,13 +1369,13 @@ function updateCapturedPieces() {
     
     if (whiteElement) {
         whiteElement.innerHTML = gameState.capturedPieces.white.map(piece => 
-            `<span class="captured-piece">${PIECE_SYMBOLS.white[piece.type]}</span>`
+            `<span class="captured-piece">${PIECE_SYMBOLS.black[piece.type]}</span>`
         ).join('');
     }
     
     if (blackElement) {
         blackElement.innerHTML = gameState.capturedPieces.black.map(piece => 
-            `<span class="captured-piece">${PIECE_SYMBOLS.black[piece.type]}</span>`
+            `<span class="captured-piece">${PIECE_SYMBOLS.white[piece.type]}</span>`
         ).join('');
     }
 }
@@ -1392,11 +1397,13 @@ function updateGameStats() {
 }
 
 function showGameStatus(message, type = 'info') {
-    const statusElement = document.getElementById('status-message');
-    const messageElement = document.getElementById('status-title');
+    const statusElement = document.getElementById('game-status');
+    const titleElement = document.getElementById('status-title');
+    const messageElement = document.getElementById('status-message');
     
-    messageElement.textContent = message;
-    // You might want to add class handling for different types here
+    titleElement.textContent = message;
+    messageElement.textContent = ''; // Can add more details here if needed
+    
     statusElement.classList.remove('hidden');
     
     if (type === 'info' || type === 'success') {
