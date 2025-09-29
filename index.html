@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davi's Chess Game - Professional Chess Experience</title>
+    <meta name="description" content="Professional Chess Game with smart AI and realistic wooden design">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main menu screen -->
+    <div id="main-menu" class="screen">
+        <div class="menu-container">
+            <h1 class="game-title">Davi's Chess Game</h1>
+            <p class="subtitle">Professional Chess Experience</p>
+            
+            <div class="menu-buttons">
+                <button class="btn btn--primary menu-btn" onclick="showGameMode('ai')">
+                    🤖 Play vs AI
+                </button>
+                <button class="btn btn--secondary menu-btn" onclick="showGameMode('local')">
+                    👥 Local Multiplayer
+                </button>
+                <button class="btn btn--secondary menu-btn" onclick="showGameMode('online')">
+                    🌐 Online Multiplayer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI difficulty selection screen -->
+    <div id="ai-setup" class="screen hidden">
+        <div class="menu-container">
+            <h2>Select Difficulty</h2>
+            <p>Choose your AI opponent's skill level</p>
+            
+            <div class="difficulty-buttons">
+                <button class="btn btn--outline difficulty-btn" data-difficulty="easy">
+                    <span class="difficulty-name">Easy</span>
+                    <span class="difficulty-desc">Beginner friendly</span>
+                </button>
+                <button class="btn btn--outline difficulty-btn" data-difficulty="medium">
+                    <span class="difficulty-name">Medium</span>
+                    <span class="difficulty-desc">Intermediate challenge</span>
+                </button>
+                <button class="btn btn--outline difficulty-btn" data-difficulty="hard">
+                    <span class="difficulty-name">Hard</span>
+                    <span class="difficulty-desc">Advanced opponent</span>
+                </button>
+            </div>
+            
+            <div class="back-button">
+                <button class="btn btn--outline" onclick="showScreen('main-menu')">
+                    Back to Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Online multiplayer setup screen -->
+    <div id="online-setup" class="screen hidden">
+        <div class="menu-container">
+            <h2>Online Multiplayer</h2>
+            <p>Play with friends on different devices</p>
+            
+            <div class="online-buttons">
+                <button class="btn btn--primary" onclick="createRoom()">
+                    Create New Game
+                    <small>Start a new game and share the code</small>
+                </button>
+                <button class="btn btn--secondary" onclick="showJoinRoom()">
+                    Join Game
+                    <small>Enter a code to join an existing game</small>
+                </button>
+            </div>
+            
+            <div class="back-button">
+                <button class="btn btn--outline" onclick="showScreen('main-menu')">
+                    Back to Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join room interface -->
+    <div id="join-room" class="screen hidden">
+        <div class="menu-container">
+            <h2>Join Game</h2>
+            <p>Enter the room code shared by your opponent</p>
+            
+            <div class="room-input">
+                <input type="text" id="room-code-input" placeholder="Enter room code..." maxlength="8">
+                <button class="btn btn--primary" onclick="joinRoom()">Join Game</button>
+            </div>
+            
+            <div class="back-button">
+                <button class="btn btn--outline" onclick="showScreen('online-setup')">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room created screen -->
+    <div id="room-created" class="screen hidden">
+        <div class="menu-container">
+            <h2>Game Created</h2>
+            <p>Share this code with your opponent</p>
+            
+            <div class="room-display">
+                <label>Room Code:</label>
+                <div id="room-code-display" class="code-display"></div>
+                <button class="btn btn--outline copy-btn" onclick="copyRoomCode()">Copy Code</button>
+            </div>
+            
+            <div class="waiting-message">
+                <p>Waiting for opponent to join...</p>
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <div class="back-button">
+                <button class="btn btn--outline" onclick="cancelRoom()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main game interface -->
+    <div id="game-screen" class="screen hidden">
+        <!-- Game header -->
+        <div class="game-header">
+            <div class="game-info">
+                <h2>Davi's Chess Game</h2>
+                <div class="current-player">
+                    <span id="turn-indicator">White's Turn</span>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button class="btn btn--small" onclick="undoMove()" id="undo-btn">
+                    ↶ Undo
+                </button>
+                <button class="btn btn--small" onclick="pauseGame()" id="pause-btn">
+                    ⏸ Pause
+                </button>
+                <button class="btn btn--small" onclick="newGame()">
+                    🔄 New Game
+                </button>
+                <button class="btn btn--small" onclick="showSettings()">
+                    ⚙ Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Main game area -->
+        <div class="game-area">
+            <!-- Chess board -->
+            <div class="board-container">
+                <div id="chess-board" class="chess-board"></div>
+                
+                <!-- Game status messages -->
+                <div id="game-status" class="game-status hidden">
+                    <div class="status-content">
+                        <h3 id="status-title">Game Status</h3>
+                        <p id="status-message">Game in progress</p>
+                        <div class="status-buttons">
+                            <button class="btn btn--primary" onclick="hideStatus()">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar with game info -->
+            <div class="game-sidebar">
+                <!-- Captured pieces -->
+                <div class="captured-pieces">
+                    <h4>Captured Pieces</h4>
+                    <div class="captured-white">
+                        <label>White:</label>
+                        <div id="captured-white-pieces"></div>
+                    </div>
+                    <div class="captured-black">
+                        <label>Black:</label>
+                        <div id="captured-black-pieces"></div>
+                    </div>
+                </div>
+
+                <!-- Move history -->
+                <div class="move-history">
+                    <h4>Move History</h4>
+                    <div id="move-list" class="move-list"></div>
+                </div>
+
+                <!-- Game timer (if applicable) -->
+                <div class="game-timer hidden">
+                    <h4>Game Timer</h4>
+                    <div class="timer-display">
+                        <span id="white-timer">10:00</span>
+                        <span class="timer-separator">-</span>
+                        <span id="black-timer">10:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pawn promotion modal -->
+    <div id="promotion-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Pawn Promotion</h3>
+            <p>Choose a piece to promote your pawn:</p>
+            
+            <div class="promotion-pieces">
+                <button class="promotion-piece" onclick="selectPromotion('q')">
+                    <span class="piece-symbol">♛</span>
+                    <span class="piece-name">Queen</span>
+                </button>
+                <button class="promotion-piece" onclick="selectPromotion('r')">
+                    <span class="piece-symbol">♜</span>
+                    <span class="piece-name">Rook</span>
+                </button>
+                <button class="promotion-piece" onclick="selectPromotion('b')">
+                    <span class="piece-symbol">♝</span>
+                    <span class="piece-name">Bishop</span>
+                </button>
+                <button class="promotion-piece" onclick="selectPromotion('n')">
+                    <span class="piece-symbol">♞</span>
+                    <span class="piece-name">Knight</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Game Settings</h3>
+            
+            <div class="setting-group">
+                <label>AI Difficulty:</label>
+                <select id="ai-difficulty-select">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label>Sound Effects:</label>
+                <input type="checkbox" id="sound-effects" checked>
+            </div>
+            
+            <div class="setting-group">
+                <label>Show Valid Moves:</label>
+                <input type="checkbox" id="show-valid-moves" checked>
+            </div>
+            
+            <div class="setting-buttons">
+                <button class="btn btn--primary" onclick="saveSettings()">Save</button>
+                <button class="btn btn--outline" onclick="closeSettings()">Cancel</button>
+                <button class="btn btn--outline" onclick="showScreen('main-menu')">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game over modal -->
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="game-over-title">Game Over</h3>
+            <p id="game-over-message">The game has ended.</p>
+            
+            <div class="game-over-buttons">
+                <button class="btn btn--primary" onclick="newGame()">New Game</button>
+                <button class="btn btn--secondary" onclick="showScreen('main-menu')">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p id="loading-message">Loading...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
