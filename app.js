@@ -158,6 +158,12 @@ function setupEventListeners() {
         });
     });
 
+    // Move history toggle
+    const moveHistoryElement = document.querySelector('.move-history');
+    if (moveHistoryElement) {
+        moveHistoryElement.addEventListener('click', () => toggleMoveHistory());
+    }
+
     // Room code input
     const roomInput = document.getElementById('room-code-input');
     if (roomInput) {
@@ -339,6 +345,18 @@ function newGame() {
     resetGame();
 }
 
+function showSettings() {
+    console.log('Showing settings');
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+    }
+}
+
+function saveSettings() {
+    console.log('Settings saved (placeholder)');
+    closeSettings();
+}
 // ============================================================================
 // CHESS BOARD RENDERING
 // ============================================================================
@@ -1307,6 +1325,14 @@ function resumeGame() {
 function closeSettings() {
     // Placeholder for closing settings modal without saving
     document.getElementById('settings-modal').classList.add('hidden');
+}
+
+function toggleMoveHistory() {
+    const historyElement = document.querySelector('.move-history');
+    if (historyElement) {
+        historyElement.classList.toggle('expanded');
+        console.log('Move history toggled');
+    }
 }
 
 function resetGame() {
