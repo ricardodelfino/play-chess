@@ -883,7 +883,7 @@ select.form-control {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-16) var(--space-24);
+    padding: var(--space-8) var(--space-20);
     background: linear-gradient(145deg, #8B4513, #A0522D);
     border: 3px solid #654321;
     border-radius: var(--radius-lg);
@@ -928,7 +928,7 @@ select.form-control {
 }
 
 .game-controls .btn {
-    background: linear-gradient(145deg, #CD853F, #A0522D);
+    background: linear-gradient(145deg, #492501, #A0522D);
     border: 2px solid #8B4513;
     color: #F5DEB3;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
@@ -983,12 +983,6 @@ select.form-control {
     display: grid;
     grid-template-columns: repeat(8, 70px);
     grid-template-rows: repeat(8, 70px);
-    border: 3px solid #5D4E37;
-    border-radius: var(--radius-sm);
-    box-shadow: 
-        inset 0 2px 8px rgba(0, 0, 0, 0.3),
-        0 2px 4px rgba(255, 255, 255, 0.2);
-    position: relative;
 }
 
 /* Wooden chess squares with realistic grain */
@@ -1069,11 +1063,9 @@ select.form-control {
 }
 
 .square.selected {
-    box-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.6),
-        inset 0 0 15px rgba(255, 215, 0, 0.2),
-        0 0 0 3px #FFD700;
-    transform: scale(1.05);
+    box-shadow: 0 0 20px rgb(170 77 0), inset 0 0 15px rgb(59 17 1 / 90%), 0 0 0 4px #fff;
+    transform: scale(1.10);
+    z-index: 1;
 }
 
 .square.valid-move::after {
@@ -1212,8 +1204,8 @@ select.form-control {
 }
 
 .game-sidebar > div {
-    background: linear-gradient(145deg, #8B4513, #654321);
-    border: 2px solid #5D4E37;
+    background: linear-gradient(145deg, #28190e, #331d08);
+    border: 2px solid #35260e;
     border-radius: var(--radius-base);
     padding: var(--space-12);
     box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -1550,17 +1542,6 @@ select.form-control {
     position: relative;
 }
 
-.menu-container::after, .modal-content::after, .game-header::after {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    pointer-events: none;
-}
-
 /* Modal buttons styling */
 .modal-buttons {
     display: flex;
@@ -1570,8 +1551,8 @@ select.form-control {
 }
 
 .modal-buttons .btn {
-    background: linear-gradient(145deg, #CD853F, #A0522D);
-    border: 2px solid #8B4513;
+    background: linear-gradient(145deg, #28190e, #331d08);
+    border: 2px solid #35260e;
     color: #F5DEB3;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
     padding: var(--space-12) var(--space-20);
