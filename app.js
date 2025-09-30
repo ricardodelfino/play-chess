@@ -350,11 +350,6 @@ function cancelRoom() {
     showMainMenu();
 }
 
-function newGame() {
-    // This function is a user-facing alias for resetGame
-    resetGame();
-}
-
 function showSettings() {
     console.log('Showing settings');
     const modal = document.getElementById('settings-modal');
@@ -1271,7 +1266,7 @@ function hasAnyValidMoves(color) {
 // GAME CONTROLS
 // ============================================================================
 
-function undoLastMove() {
+function undoMove() {
     if (gameState.moveHistory.length === 0 || gameState.isGameOver) return;
     
     console.log('Undoing last move');
@@ -1318,7 +1313,7 @@ function undoLastMove() {
     updateCapturedPieces();
     
     if (gameState.gameMode === 'ai' && gameState.moveHistory.length > 0) {
-        setTimeout(() => undoLastMove(), 100);
+        setTimeout(() => undoMove(), 100);
     }
 }
 
@@ -1350,6 +1345,10 @@ function toggleMoveHistory() {
 function resetGame() {
     console.log('Resetting game');
     
+    // Ensure all screens and modals are hidden before initializing
+    hideAllScreens();
+    document.getElementById('game-screen').classList.remove('hidden');
+
     document.querySelectorAll('.modal').forEach(modal => {
         modal.classList.add('hidden');
     });
@@ -1463,7 +1462,8 @@ function showGameEnd(title, message) {
     
     titleElement.textContent = title;
     messageElement.textContent = message;
-    modal.classList.remove('hidden');
+    modal.classList.add('game-over'); // Add class for lighter background
+    modal.classList.remove('hidden'); 
 }
 
 // ============================================================================
